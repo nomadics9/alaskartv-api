@@ -75,3 +75,49 @@ func majorMinorPatchFromSemVer(semVer string) (int, int, int) {
 func semVerFromMajorMinorPatch(major, minor, patch int) string {
 	return "v" + strconv.Itoa(major) + "." + strconv.Itoa(minor) + "." + strconv.Itoa(patch)
 }
+
+func BumpWithRollover(currentVersion, bumpType string) (string, error) {
+	if currentVersion == "" {
+		currentVersion = "v0.0.0"
+	} else {
+		if !semver.IsValid(currentVersion) {
+			if semver.IsValid("v" + currentVersion) {
+				currentVersion = "v" + currentVersion
+			} else {
+				return "", fmt.Errorf("invalid semVer tag '%s'", currentVersion)
+			}
+		}
+		if currentVersion == semver.Major(currentVersion) {
+			currentVersion = currentVersion + ".0.0"
+		}
+		if currentVersion == semver.MajorMinor(currentVersion) {
+			currentVersion = currentVersion + ".0"
+		}
+	}
+
+	major, minor, patch := majorMinorPatchFromSemVer(currentVersion)
+
+	switch bumpType {
+	case "major":
+		major++
+		minor = 0
+		patch = 0
+
+	case "minor":
+		minor++
+		patch = 0
+
+	case "patch":
+		patch++
+		// Handle rollover if patch reaches 10 (custom logic)
+		if patch >= 10 {
+			patch = 0
+			minor++
+		}
+
+	default:
+		return "", fmt.Errorf("invalid bump type, expected 'major', 'minor' or 'patch', got '%s'", bumpType)
+	}
+
+	return semVerFromMajorMinorPatch(major, minor, patch), nil
+}

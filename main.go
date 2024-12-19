@@ -14,12 +14,10 @@ import (
 
 func updateVersion(repoPath string, serviceName string) error {
 	versionPath := fmt.Sprintf("%s/version.txt", repoPath)
-	//versionFile := "version.txt"
 	newVersion := getVersion(serviceName)
 
 	if serviceName == "alaskartv" {
 		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
-		//versionFile = "release.txt"
 		bumpVersionTv(repoPath)
 	}
 
@@ -54,7 +52,7 @@ func bumpVersionTv(repoPath string) {
 		case strings.HasPrefix(line, "VERSION_NAME="):
 			parts := strings.Split(line, "=")
 			currentPatch := parts[1]
-			newVersion, _ := Bump(currentPatch, "patch")
+			newVersion, _ := BumpWithRollover(currentPatch, "patch")
 			updatedContent += fmt.Sprintf("VERSION_NAME=%s\n", newVersion)
 
 		case strings.HasPrefix(line, "VERSION_CODE="):
