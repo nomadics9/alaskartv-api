@@ -1,0 +1,13 @@
+services:
+  api-server:
+    image: nomadics/api-server:latest
+    container_name: api-server
+    ports:
+      - "9090:8080"
+    environment:
+      - GIT_USERNAME=${GIT_USERNAME}
+      - GIT_EMAIL=${GIT_EMAIL}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - ~/alaskartv:/data/alaskartv
+    restart: unless-stopped
