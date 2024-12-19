@@ -10,19 +10,19 @@ import (
 )
 
 func updateVersion(repoPath string, serviceName string) error {
-	versionFile := fmt.Sprintf("%s/version.txt", repoPath)
+	versionPath := fmt.Sprintf("%s/version.txt", repoPath)
+	versionFile := "version.txt"
 
 	newVersion := getVersion(serviceName)
 
-	os.WriteFile(versionFile, []byte(newVersion), 0644)
-
-	versionPath := "version.txt"
 	if repoPath == "/data/alaskartv/androidtv-ci" {
-		versionPath = "release.txt"
+		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
+		versionFile = "release.txt"
 	}
 
+	os.WriteFile(versionPath, []byte(newVersion), 0644)
 	cmds := [][]string{
-		{"git", "-C", repoPath, "add", versionPath},
+		{"git", "-C", repoPath, "add", versionFile},
 		{"git", "-C", repoPath, "commit", "-m", fmt.Sprintf("Bump version to %s", newVersion)},
 		{"git", "-C", repoPath, "push"},
 	}
