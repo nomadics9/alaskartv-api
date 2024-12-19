@@ -14,18 +14,18 @@ import (
 
 func updateVersion(repoPath string, serviceName string) error {
 	versionPath := fmt.Sprintf("%s/version.txt", repoPath)
-	versionFile := "version.txt"
+	//versionFile := "version.txt"
 	newVersion := getVersion(serviceName)
 
-	if repoPath == "/data/alaskartv/androidtv-ci" {
+	if serviceName == "alaskartv" {
 		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
-		versionFile = "release.txt"
+		//versionFile = "release.txt"
 		bumpVersionTv(repoPath)
 	}
 
 	os.WriteFile(versionPath, []byte(newVersion), 0644)
 	cmds := [][]string{
-		{"git", "-C", repoPath, "add", versionFile},
+		{"git", "-C", repoPath, "add", "."},
 		{"git", "-C", repoPath, "commit", "-m", fmt.Sprintf("Bump version to %s", newVersion)},
 		{"git", "-C", repoPath, "push"},
 	}
@@ -71,6 +71,12 @@ func bumpVersionTv(repoPath string) {
 	if err := scanner.Err(); err != nil {
 		fmt.Errorf("error reading %s: %w", filePath, err)
 	}
+	// Write the updated content back to the file
+	if err := os.WriteFile(filePath, []byte(updatedContent), 0644); err != nil {
+		fmt.Errorf("failed to write to %s: %w", filePath, err)
+	}
+
+	fmt.Println("Version bumped successfully!")
 
 }
 
