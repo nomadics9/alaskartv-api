@@ -5,6 +5,7 @@ go 1.23.3
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.16.2
+	golang.org/x/mod v0.17.0
 )
 
 require (
