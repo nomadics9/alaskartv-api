@@ -17,7 +17,7 @@ func updateVersion(repoPath string, serviceName string) error {
 	versionPath := fmt.Sprintf("%s/version.txt", repoPath)
 	newVersion := getVersion(serviceName)
 
-	godotenv.Load(".env")
+	godotenv.Load(".botenv")
 	botToken := os.Getenv("BOT_TOKEN")
 	chatid := os.Getenv("CHAT_ID")
 
