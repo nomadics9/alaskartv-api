@@ -13,5 +13,5 @@ if [ "$latest_release" != "$(cat $LAST_RELEASE_FILE 2>/dev/null)" ]; then
   curl -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
     -d chat_id="$CHAT_ID" \
     -d text="🚀 New Release Detected: $latest_release on $REPO_OWNER/$REPO_NAME"
-  curl -X POST "http://localhost:9090/alaskartv"
+  curl -X POST "http://localhost:8080/alaskartv"
 fi
