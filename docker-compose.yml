@@ -11,3 +11,4 @@ services:
     volumes:
       - ~/alaskartv:/data/alaskartv
     restart: unless-stopped
+    hostname: alaskar-api
