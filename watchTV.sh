@@ -17,5 +17,5 @@ if [ "$latest_release" != "$version" ]; then
   curl -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
     -d chat_id="$CHAT_ID" \
     -d text="🚀 New Release Detected: $latest_release on $REPO_OWNER/$REPO_NAME"
-  curl -X POST "http://alaskar-api:8080/alaskartv"
+  curl -X POST "http://alaskar-api:8080/api/alaskartv"
 fi
