@@ -10,11 +10,16 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func updateVersion(repoPath string, serviceName string) error {
 	versionPath := fmt.Sprintf("%s/version.txt", repoPath)
 	newVersion := getVersion(serviceName)
+
+	godotenv.Load(".env")
+	botToken := os.Getenv("BOT_TOKEN")
+	chatid := os.Getenv("CHAT_ID")
 
 	if serviceName == "alaskartv" {
 		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
@@ -26,6 +31,12 @@ func updateVersion(repoPath string, serviceName string) error {
 		{"git", "-C", repoPath, "add", "."},
 		{"git", "-C", repoPath, "commit", "-m", fmt.Sprintf("Bump version to %s", newVersion)},
 		{"git", "-C", repoPath, "push"},
+		{
+			"curl", "-X", "POST",
+			fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", botToken),
+			"-d", fmt.Sprintf("chat_id=%s", chatid),
+			"-d", fmt.Sprintf("text=GO-SERVER: %s updated to %s", serviceName, newVersion),
+		},
 	}
 
 	for _, cmd := range cmds {

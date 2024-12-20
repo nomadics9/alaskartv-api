@@ -6,7 +6,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o api-server .
 
 FROM alpine:latest
-RUN apk --no-cache add git ca-certificates
+RUN apk --no-cache add git ca-certificates jq
 
 WORKDIR /app
 COPY --from=builder /app/api-server .
@@ -25,6 +25,11 @@ RUN printf '#!/bin/sh\n\n' > /entrypoint.sh && \
     # Finally, run the main app
     printf 'exec /app/api-server\n' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
+
+COPY watchTV.sh /app/watchTV.sh
+COPY .botenv /app/.botenv
+RUN chmod +x /app/watchTV.sh && \
+    echo "0 0 * * * /app/watchTV.sh" > /etc/crontabs/root
 
 ENTRYPOINT ["/entrypoint.sh"]
 
