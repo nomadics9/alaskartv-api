@@ -6,7 +6,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o api-server .
 
 FROM alpine:latest
-RUN apk --no-cache add git ca-certificates jq
+RUN apk --no-cache add git ca-certificates jq curl
 
 WORKDIR /app
 COPY --from=builder /app/api-server .
