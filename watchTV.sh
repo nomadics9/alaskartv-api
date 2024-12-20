@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-if [ -f .env ]; then
+if [ -f .botenv ]; then
     export $(grep -v '^#' .botenv | xargs)
 fi
 
