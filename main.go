@@ -110,13 +110,11 @@ func notifyHandler(c *gin.Context) {
 	botToken := os.Getenv("BOT_TOKEN")
 	chatid := os.Getenv("CHAT_ID")
 
-	telegramToken := botToken
-	chatID := chatid
 	message := fmt.Sprintf("Service '%s' was updated to image '%s'", data.Name, data.Image)
 
-	telegramAPI := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", telegramToken)
+	telegramAPI := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", botToken)
 	resp, err := http.PostForm(telegramAPI, url.Values{
-		"chat_id": {chatID},
+		"chat_id": {chatid},
 		"text":    {message},
 	})
 	if err != nil {
