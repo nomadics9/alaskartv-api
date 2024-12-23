@@ -80,13 +80,52 @@ func bumpVersionTv(repoPath string) {
 	if err := scanner.Err(); err != nil {
 		fmt.Errorf("error reading %s: %w", filePath, err)
 	}
-	// Write the updated content back to the file
 	if err := os.WriteFile(filePath, []byte(updatedContent), 0644); err != nil {
 		fmt.Errorf("failed to write to %s: %w", filePath, err)
 	}
 
 	fmt.Println("Version bumped successfully!")
 
+}
+
+func notifyHandler(c *gin.Context) {
+	var data struct {
+		Name  string `json:"name"`
+		Image string `json:"image"`
+	}
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		return
+	}
+
+	if data.Name == "" {
+		data.Name = "unknown"
+	}
+	if data.Image == "" {
+		data.Image = "unknown"
+	}
+
+	godotenv.Load(".botenv")
+	botToken := os.Getenv("BOT_TOKEN")
+	chatid := os.Getenv("CHAT_ID")
+
+	telegramToken := botToken
+	chatID := chatid
+	message := fmt.Sprintf("Service '%s' was updated to image '%s'", data.Name, data.Image)
+
+	telegramAPI := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", telegramToken)
+	resp, err := http.PostForm(telegramAPI, url.Values{
+		"chat_id": {chatID},
+		"text":    {message},
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send Telegram message"})
+		return
+	}
+	defer resp.Body.Close()
+
+	c.JSON(http.StatusOK, gin.H{"message": "Notification sent"})
 }
 
 func main() {
@@ -118,6 +157,8 @@ func main() {
 		}
 		c.String(http.StatusOK, "Bumped AlaskarTV!")
 	})
+
+	router.POST("/notify", notifyHandler)
 
 	fmt.Println("Webhook server running on port 8080")
 	router.Run(":8080")
