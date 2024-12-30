@@ -36,7 +36,8 @@ func updateVersion(repoPath string, serviceName string) error {
 			"curl", "-X", "POST",
 			fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", botToken),
 			"-d", fmt.Sprintf("chat_id=%s", chatid),
-			"-d", fmt.Sprintf("text=GO-SERVER: %s updated to %s", serviceName, newVersion),
+			"-d", fmt.Sprintf("text=<b>Alaskar-api</b>: <b>%s</b> updated to <b>%s</b>", serviceName, newVersion),
+			"-d", fmt.Sprintf("parse_mode=HTML"),
 		},
 	}
 
@@ -92,7 +93,7 @@ func bumpVersionTv(repoPath string) {
 func notifyHandler(c *gin.Context) {
 	var data struct {
 		Name  string `json:"name"`
-		Image string `json:"image"`
+		Message string `json:"message"`
 	}
 
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -103,20 +104,21 @@ func notifyHandler(c *gin.Context) {
 	if data.Name == "" {
 		data.Name = "unknown"
 	}
-	if data.Image == "" {
-		data.Image = "unknown"
+	if data.Message == "" {
+		data.Message = "unknown"
 	}
 
 	godotenv.Load(".botenv")
 	botToken := os.Getenv("BOT_TOKEN")
 	chatid := os.Getenv("CHAT_ID")
 
-	message := fmt.Sprintf("Service '%s' was updated to image '%s'", data.Name, data.Image)
+	message := fmt.Sprintf("<b>Alaskar-api</b>: <b>%s</b> \n \n %s", data.Name, data.Message)
 
 	telegramAPI := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", botToken)
 	resp, err := http.PostForm(telegramAPI, url.Values{
 		"chat_id": {chatid},
 		"text":    {message},
+		"parse_mode": {"HTML"},
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send Telegram message"})

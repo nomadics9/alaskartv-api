@@ -23,6 +23,7 @@ RUN printf '#!/bin/sh\n\n' > /entrypoint.sh && \
     printf 'git config --global --add safe.directory /data/alaskartv/docker-ci\n' >> /entrypoint.sh && \
     printf 'git config --global --add safe.directory /data/alaskartv/androidtv-ci\n\n' >> /entrypoint.sh && \
     # Finally, run the main app
+    printf 'crond -b\n' >> /entrypoint.sh && \
     printf 'exec /app/api-server\n' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
