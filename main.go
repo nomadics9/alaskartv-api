@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -14,7 +15,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func updateVersion(repoPath string, serviceName string) error {
+func updateVersion(repoPath string, serviceName string) (string, error) {
 	versionPath := fmt.Sprintf("%s/version.txt", repoPath)
 	newVersion := getVersion(serviceName)
 
@@ -25,6 +26,27 @@ func updateVersion(repoPath string, serviceName string) error {
 	if serviceName == "alaskartv" {
 		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
 		bumpVersionTv(repoPath)
+	}
+
+	currentVersion, err := os.ReadFile(versionPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to read version file: %w", err)
+	}
+
+	// Compare versions
+	if strings.TrimSpace(string(currentVersion)) == strings.TrimSpace(newVersion) {
+		message := map[string]interface{}{
+			"status":  "unchanged",
+			"message": fmt.Sprintf("Version is already at %s", newVersion),
+			"service": serviceName,
+			"version": newVersion,
+		}
+
+		jsonResponse, err := json.Marshal(message)
+		if err != nil {
+			return "", fmt.Errorf("failed to marshal JSON: %w", err)
+		}
+		return string(jsonResponse), nil
 	}
 
 	os.WriteFile(versionPath, []byte(newVersion), 0644)
@@ -44,11 +66,22 @@ func updateVersion(repoPath string, serviceName string) error {
 	for _, cmd := range cmds {
 		err := exec.Command(cmd[0], cmd[1:]...).Run()
 		if err != nil {
-			return fmt.Errorf("failed to execute command %v: %w", cmd, err)
+			return "", fmt.Errorf("failed to execute command %v: %w", cmd, err)
 		}
 	}
 
-	return nil
+	message := map[string]interface{}{
+		"status":  "updated",
+		"message": fmt.Sprintf("Successfully updated from %s to %s", string(currentVersion), newVersion),
+		"service": serviceName,
+		"version": newVersion,
+	}
+
+	jsonResponse, err := json.Marshal(message)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal JSON: %w", err)
+	}
+	return string(jsonResponse), nil
 }
 
 func bumpVersionTv(repoPath string) {
@@ -92,7 +125,7 @@ func bumpVersionTv(repoPath string) {
 
 func notifyHandler(c *gin.Context) {
 	var data struct {
-		Name  string `json:"name"`
+		Name    string `json:"name"`
 		Message string `json:"message"`
 	}
 
@@ -116,8 +149,8 @@ func notifyHandler(c *gin.Context) {
 
 	telegramAPI := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", botToken)
 	resp, err := http.PostForm(telegramAPI, url.Values{
-		"chat_id": {chatid},
-		"text":    {message},
+		"chat_id":    {chatid},
+		"text":       {message},
 		"parse_mode": {"HTML"},
 	})
 	if err != nil {
@@ -129,34 +162,71 @@ func notifyHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Notification sent"})
 }
 
+func notify(jsonResponse string) {
+	var data struct {
+		Status  string `json:"status"`
+		Message string `json:"message"`
+		Service string `json:"service"`
+		Version string `json:"version"`
+	}
+	godotenv.Load(".botenv")
+	botToken := os.Getenv("BOT_TOKEN")
+	chatid := os.Getenv("CHAT_ID")
+
+	json.Unmarshal([]byte(jsonResponse), &data)
+
+	message := fmt.Sprintf("<b>Alaskar-api</b>: <b>%s %s</b> \n \n %s", data.Service, data.Status, data.Message)
+	telegramAPI := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", botToken)
+	resp, _ := http.PostForm(telegramAPI, url.Values{
+		"chat_id":    {chatid},
+		"text":       {message},
+		"parse_mode": {"HTML"},
+	})
+	defer resp.Body.Close()
+}
+
 func main() {
 	router := gin.Default()
 
 	router.POST("/api/alaskarfin", func(c *gin.Context) {
-		err := updateVersion("/data/alaskartv/docker-ci/alaskarfin", "alaskarfin")
+		jsonResponse, err := updateVersion("/data/alaskartv/docker-ci/alaskarfin", "alaskarfin")
 		if err != nil {
-			c.String(http.StatusInternalServerError, "Something went wrong: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
 			return
 		}
-		c.String(http.StatusOK, "Bumped Alaskarfin!")
+		c.Header("Content-Type", "application/json")
+		c.String(http.StatusOK, jsonResponse)
+		notify(jsonResponse)
 	})
 
 	router.POST("/api/alaskarseer", func(c *gin.Context) {
-		err := updateVersion("/data/alaskartv/docker-ci/alaskarseer", "alaskarseer")
+		jsonResponse, err := updateVersion("/data/alaskartv/docker-ci/alaskarseer", "alaskarseer")
 		if err != nil {
-			c.String(http.StatusInternalServerError, "Something went wrong: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
 			return
 		}
-		c.String(http.StatusOK, "Bumped Alaskarseer!")
+		c.Header("Content-Type", "application/json")
+		c.String(http.StatusOK, jsonResponse)
+		notify(jsonResponse)
 	})
 
 	router.POST("/api/alaskartv", func(c *gin.Context) {
-		err := updateVersion("/data/alaskartv/androidtv-ci", "alaskartv")
+		jsonResponse, err := updateVersion("/data/alaskartv/androidtv-ci", "alaskartv")
 		if err != nil {
-			c.String(http.StatusInternalServerError, "Something went wrong: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
 			return
 		}
-		c.String(http.StatusOK, "Bumped AlaskarTV!")
+
+		c.Header("Content-Type", "application/json")
+		c.String(http.StatusOK, jsonResponse)
+		notify(jsonResponse)
+
 	})
 
 	router.POST("/notify", notifyHandler)
