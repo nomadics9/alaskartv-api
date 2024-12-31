@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    async function makeRequest(endpoint) {
+        const responseDiv = document.getElementById('response');
+        responseDiv.innerHTML = '';
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                displayResponse(errorData);
+            } else {
+                const data = await response.json();
+                displayResponse(data);
+            }
+        } catch (error) {
+            responseDiv.textContent = `Error: ${error.message}`;
+        }
+    }
+
+    function displayResponse(data) {
+        const responseDiv = document.getElementById('response');
+        responseDiv.innerHTML = `
+                <div class="response-item">
+                    <strong>Service:</strong> ${data.service}
+                </div>
+                <div class="response-item">
+                    <strong>Message:</strong> ${data.message}
+                </div>
+                <div class="response-item">
+                    <strong>Status:</strong> ${data.status}
+                </div>
+                <div class="response-item">
+                    <strong>Version:</strong> ${data.version}
+                </div>
+            `;
+    }
+
+    function callEndpoint1() {
+        makeRequest('http://192.168.0.200:9090/api/alaskarfin');
+    }
+
+    function callEndpoint2() {
+        makeRequest('http://192.168.0.200:9090/api/alaskarseer');
+    }
+
+    function callEndpoint3() {
+        makeRequest('http://192.168.0.200:9090/api/alaskartv');
+    }
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alaskar Bump'n'Deploy</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Alaskar Bump'n'Deploy</h1>
+        <div>
+            <button onclick="callEndpoint1()">AlaskarFin</button>
+            <button onclick="callEndpoint2()">AlaskarSeer</button>
+            <button onclick="callEndpoint3()">AlaskarTV</button>
+        </div>
+        <div id="response">
+        </div>
+    </div>
+
+</body>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #0B192C;
+    }
+
+    .container {
+        text-align: center;
+        color: white;
+        background-color: #1E3E62;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #FF6500;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #FB773C;
+    }
+
+    #response {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #0B192C;
+        border-radius: 5px;
+        min-height: 50px;
+        text-align: left;
+    }
+</style>
+
+</html>

@@ -28,6 +28,7 @@ RUN printf '#!/bin/sh\n\n' > /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
 COPY watchTV.sh /app/watchTV.sh
+COPY frontend.html /app/index.html
 COPY .botenv /app/.botenv
 RUN chmod +x /app/watchTV.sh && \
     echo "0 0 * * * /app/watchTV.sh" > /etc/crontabs/root
