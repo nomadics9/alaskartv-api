@@ -239,7 +239,7 @@ func main() {
 
 	router.POST("/notify", notifyHandler)
 	router.GET("/", func(c *gin.Context) {
-		c.File("frontend.html")
+		c.File("index.html")
 	})
 
 	fmt.Println("Webhook server running on port 8080")
