@@ -197,7 +197,7 @@ func main() {
 	}))
 
 	router.POST("/api/alaskarfin", func(c *gin.Context) {
-		jsonResponse, err := updateVersion("/data/alaskartv/docker-ci/alaskarfin", "alaskarfin")
+		jsonResponse, err := updateVersion("/data/alaskartv-forge/alaskartv-docker/alaskarfin", "alaskarfin")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
@@ -210,7 +210,7 @@ func main() {
 	})
 
 	router.POST("/api/alaskarseer", func(c *gin.Context) {
-		jsonResponse, err := updateVersion("/data/alaskartv/docker-ci/alaskarseer", "alaskarseer")
+		jsonResponse, err := updateVersion("/data/alaskartv-forge/alaskartv-docker/alaskarseer", "alaskarseer")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
@@ -223,7 +223,7 @@ func main() {
 	})
 
 	router.POST("/api/alaskartv", func(c *gin.Context) {
-		jsonResponse, err := updateVersion("/data/alaskartv/androidtv-ci", "alaskartv")
+		jsonResponse, err := updateVersion("/data/alaskartv-forge/alaskartv-app", "alaskartv")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
