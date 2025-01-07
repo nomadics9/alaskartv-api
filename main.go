@@ -24,11 +24,6 @@ func updateVersion(repoPath string, serviceName string) (string, error) {
 	botToken := os.Getenv("BOT_TOKEN")
 	chatid := os.Getenv("CHAT_ID")
 
-	if serviceName == "alaskartv" {
-		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
-		bumpVersionTv(repoPath)
-	}
-
 	currentVersion, err := os.ReadFile(versionPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to read version file: %w", err)
@@ -48,6 +43,11 @@ func updateVersion(repoPath string, serviceName string) (string, error) {
 			return "", fmt.Errorf("failed to marshal JSON: %w", err)
 		}
 		return string(jsonResponse), nil
+	}
+
+	if serviceName == "alaskartv" {
+		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
+		bumpVersionTv(repoPath)
 	}
 
 	os.WriteFile(versionPath, []byte(newVersion), 0644)
@@ -83,7 +83,7 @@ func updateVersion(repoPath string, serviceName string) (string, error) {
 		return "", fmt.Errorf("failed to marshal JSON: %w", err)
 	}
 	return string(jsonResponse), nil
-}
+	}
 
 func bumpVersionTv(repoPath string) {
 	filePath := fmt.Sprintf("%s/version.txt", repoPath)
