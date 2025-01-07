@@ -18,6 +18,9 @@ import (
 
 func updateVersion(repoPath string, serviceName string) (string, error) {
 	versionPath := fmt.Sprintf("%s/version.txt", repoPath)
+	if serviceName == "alaskartv" {
+		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
+	}
 	newVersion := getVersion(serviceName)
 
 	godotenv.Load(".botenv")
@@ -46,10 +49,8 @@ func updateVersion(repoPath string, serviceName string) (string, error) {
 	}
 
 	if serviceName == "alaskartv" {
-		versionPath = fmt.Sprintf("%s/release.txt", repoPath)
 		bumpVersionTv(repoPath)
 	}
-
 	os.WriteFile(versionPath, []byte(newVersion), 0644)
 	cmds := [][]string{
 		{"git", "-C", repoPath, "add", "."},
@@ -83,7 +84,7 @@ func updateVersion(repoPath string, serviceName string) (string, error) {
 		return "", fmt.Errorf("failed to marshal JSON: %w", err)
 	}
 	return string(jsonResponse), nil
-	}
+}
 
 func bumpVersionTv(repoPath string) {
 	filePath := fmt.Sprintf("%s/version.txt", repoPath)
