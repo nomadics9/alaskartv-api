@@ -188,7 +188,7 @@ func notify(jsonResponse string) {
 	defer resp.Body.Close()
 }
 
-func TriggerPublish() {
+func TriggerPublish(c *gin.Context) {
 	godotenv.Load(".botenv")
 	FORGEJO := os.Getenv("FORGEJO_TOKEN")
 	payload := `{"ref": "main"}`
@@ -201,6 +201,8 @@ func TriggerPublish() {
 
 	client := &http.Client{}
 	client.Do(req)
+	c.Redirect(http.StatusFound, "https://git.askar.tv/nomad/alaskartv-app/actions")
+
 }
 
 func main() {
@@ -254,10 +256,7 @@ func main() {
 
 	})
 
-	router.POST("/api/publish", func(c *gin.Context) {
-		TriggerPublish()
-		c.JSON(http.StatusOK, gin.H{"message": "Workflow triggered successfully"})
-	})
+	router.GET("/api/publish", TriggerPublish)
 
 	router.POST("/notify", notifyHandler)
 	router.GET("/", func(c *gin.Context) {
