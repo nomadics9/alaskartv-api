@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -187,6 +188,21 @@ func notify(jsonResponse string) {
 	defer resp.Body.Close()
 }
 
+func TriggerPublish() {
+	godotenv.Load(".botenv")
+	FORGEJO := os.Getenv("FORGEJO_TOKEN")
+	payload := `{"ref": "main"}`
+	apiURL := "https://git.askar.tv/api/v1/repos/nomad/alaskartv-app/actions/workflows/publish.yml/dispatches"
+	apiToken := FORGEJO
+
+	req, _ := http.NewRequest("POST", apiURL, bytes.NewBuffer([]byte(payload)))
+	req.Header.Set("Authorization", "token "+apiToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	client.Do(req)
+}
+
 func main() {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -236,6 +252,11 @@ func main() {
 		c.String(http.StatusOK, jsonResponse)
 		notify(jsonResponse)
 
+	})
+
+	router.POST("/api/publish", func(c *gin.Context) {
+		TriggerPublish()
+		c.JSON(http.StatusOK, gin.H{"message": "Workflow triggered successfully"})
 	})
 
 	router.POST("/notify", notifyHandler)
