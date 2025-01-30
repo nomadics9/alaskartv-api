@@ -188,6 +188,69 @@ func notify(jsonResponse string) {
 	defer resp.Body.Close()
 }
 
+func radarrScan(c *gin.Context) {
+	godotenv.Load(".botenv")
+	apiToken := os.Getenv("RADARR_API")
+
+	apiURL := "https://rr.askar.tv/api/v3/command"
+
+	payload := `{
+        "name": "RefreshMovie",
+        "filterKey": "missing",
+        "filterValue": "true",
+    }`
+
+	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	req.Header.Set("X-Api-Key", apiToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer resp.Body.Close()
+
+	c.JSON(resp.StatusCode, gin.H{"message": "Scan initiated"})
+}
+
+func sonarrScan(c *gin.Context) {
+	godotenv.Load(".botenv")
+	apiToken := os.Getenv("SONARR_API")
+
+	apiURL := "https://sr.askar.tv/api/v3/command"
+
+	payload := `{
+        "name": "RefreshMovie",
+        "filterKey": "missing",
+        "filterValue": "true"
+    }`
+
+	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	req.Header.Set("X-Api-Key", apiToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer resp.Body.Close()
+
+	c.JSON(resp.StatusCode, gin.H{"message": "Missing episodes scan initiated"})
+}
+
 func TriggerPublish(c *gin.Context) {
 	godotenv.Load(".botenv")
 	FORGEJO := os.Getenv("FORGEJO_TOKEN")
@@ -255,7 +318,8 @@ func main() {
 		notify(jsonResponse)
 
 	})
-
+	router.GET("/api/radarr", radarrScan)
+	router.GET("/api/sonarr", sonarrScan)
 	router.GET("/api/publish", TriggerPublish)
 
 	router.POST("/notify", notifyHandler)
