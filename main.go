@@ -196,7 +196,7 @@ func radarrScan(c *gin.Context) {
 
 	payload := `{
         "name": "RefreshMovie",
-        "filterKey": "missing",
+        "filterKey": "Missing",
         "filterValue": "true",
     }`
 
@@ -227,7 +227,7 @@ func sonarrScan(c *gin.Context) {
 
 	payload := `{
         "name": "RescanSeries",
-        "filterKey": "missing",
+        "filterKey": "Missing Episodes",
         "filterValue": "true"
     }`
 
