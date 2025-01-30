@@ -226,7 +226,7 @@ func sonarrScan(c *gin.Context) {
 	apiURL := "https://sr.askar.tv/api/v3/command"
 
 	payload := `{
-        "name": "RefreshMovie",
+        "name": "RescanSeries",
         "filterKey": "missing",
         "filterValue": "true"
     }`
