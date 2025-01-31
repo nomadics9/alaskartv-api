@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance in Progress | Creative Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 0 auto 30px;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 65%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ff9f43);
+            border-radius: 10px;
+            animation: progress 2s ease-in-out infinite alternate;
+        }
+
+        .construction-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .floating-tools {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.3;
+        }
+
+        @keyframes progress {
+            from {
+                width: 65%;
+            }
+
+            to {
+                width: 68%;
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+        }
+
+        .tool-1 {
+            top: -50px;
+            left: 20px;
+            animation: float 3s infinite;
+        }
+
+        .tool-2 {
+            top: -30px;
+            right: 50px;
+            animation: float 4s infinite;
+        }
+
+        .tool-3 {
+            bottom: -40px;
+            left: 100px;
+            animation: float 3.5s infinite;
+        }
+
+        .tool-4 {
+            bottom: -60px;
+            right: 20px;
+            animation: float 5s infinite;
+        }
+
+        .spinner {
+            font-size: 2em;
+            animation: spin 4s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="floating-tools tool-1">🔧</div>
+        <div class="floating-tools tool-2">🛠️</div>
+        <div class="floating-tools tool-3">🔨</div>
+        <div class="floating-tools tool-4">⚙️</div>
+
+        <div class="construction-icon">🚧</div>
+        <h1>Under Maintenance</h1>
+        <p>We're currently working hard to improve your experience!<br>
+            Our digital craftsmen are shaping something amazing.<br>
+            Please check back soon!</p>
+
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+
+        <div class="spinner">⚙️</div>
+        <p>Estimated completion: 65%</p>
+    </div>
+</body>
+
+</html>
