@@ -4,7 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="refresh" content="0;url=https://r.askar.tv"> -->
     <title>Maintenance in Progress | Creative Studio</title>
+            <script>
+      const currentHost = window.location.hostname;
+      const allowedDomains = {
+        'https//r.askar.tv': 'https://askar.tv',
+        'https://askar.tv': 'https://askar.tv'
+      };
+      if (allowedDomains[currentHost]) {
+        window.location.href = allowedDomains[currentHost] + '?cacheBust=' + Date.now();
+      } else {
+        window.location.href = 'https://askar.tv?cacheBust=' + Date.now();
+      }
+    </script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,13 +28,21 @@
             box-sizing: border-box;
         }
 
+        @font-face {
+          font-family: 'awesomefont';
+          src: url('awesome.otf') format('opentype'),
+          font-weight: normal;
+          font-style: normal;
+        }
+
+
         body {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
+            background: linear-gradient(135deg, #2c3e50, #54876B);
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+            font-family: 'Noto Sans JP', sans-serif;
             color: white;
             overflow: hidden;
         }
@@ -72,6 +96,22 @@
             position: absolute;
             font-size: 2em;
             opacity: 0.3;
+        }
+
+
+
+        .footer {
+          font-size: 0.8em; /* Makes the text smaller */
+        }
+        .footer a {
+          color: #FFA500; /* Orange */
+          text-decoration: none; /* Optional: removes underline */
+        }
+        .footer a:hover {
+          color: #FF8C00; /* Darker orange on hover */
+        }
+        .linkfont {
+            font-family: 'awesomefont'
         }
 
         @keyframes progress {
@@ -180,7 +220,10 @@
 
         <div class="spinner">⚙️</div>
         <p>Estimated completion: ∞ </p>
+  <div class="footer">
+    © 2024 <a class="linkfont" href="https://alaskar.dev">AlaskarDEV</a>. All rights reserved.
+  </div>
     </div>
-</body>
 
+</body>
 </html>
